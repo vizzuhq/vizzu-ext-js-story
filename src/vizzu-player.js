@@ -18,6 +18,13 @@ class VizzuPlayer extends HTMLElement {
     this._initVizzu();
   }
 
+  connectedCallback() {
+    if (!this.hasAttribute("tabindex")) {
+      this.setAttribute("tabindex", 0);
+      this.tabIndex = 0;
+    }
+  }
+
   get debug() {
     const debugCookie = document.cookie
       .split(";")
@@ -372,6 +379,9 @@ class VizzuPlayer extends HTMLElement {
           --_bg: var(--vizzu-background-color, #fff);
           background-color: var(--_bg);
         }
+        :host(:focus) {
+          outline: none;
+        }
         :host([initializing]) #vizzu {
           visibility: hidden;
         }
@@ -384,7 +394,7 @@ class VizzuPlayer extends HTMLElement {
           justify-content: center;
           align-items: center;
           width: 100%;
-          max-height: calc(100% - 50px);
+          max-height: calc(100% - 52px);
           box-sizing: border-box;
           flex: 1;
         }
