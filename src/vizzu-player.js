@@ -1,7 +1,5 @@
 import VizzuController from "./vizzu-controller.js";
 
-import Vizzu from "https://cdn.jsdelivr.net/npm/vizzu@~0.5.0/dist/vizzu.min.js";
-
 const LOG_PREFIX = [
   "%cVIZZU%cPLAYER",
   "background: #e2ae30; color: #3a60bf; font-weight: bold",
@@ -15,7 +13,18 @@ class VizzuPlayer extends HTMLElement {
     this.attachShadow({ mode: "open" });
     this.shadowRoot.innerHTML = this._render();
 
-    this._initVizzu();
+    this._resolveVizzu = null;
+    this.initializing = new Promise((resolve) => {
+      this._resolveVizzu = resolve;
+    }).then(() => this.vizzu.initializing);
+  }
+
+  async connectedCallback() {
+    await this._initVizzu();
+    if (!this.hasAttribute("tabindex")) {
+      this.setAttribute("tabindex", 0);
+      this.tabIndex = 0;
+    }
   }
 
   get debug() {
@@ -31,8 +40,20 @@ class VizzuPlayer extends HTMLElement {
     }
   }
 
-  _initVizzu() {
-    this.vizzu = new Vizzu(this.vizzuCanvas);
+  get vizzuUrl() {
+    return (
+      this.getAttribute("vizzu-url") ||
+      "https://cdn.jsdelivr.net/npm/vizzu@latest/dist/vizzu.min.js"
+    );
+  }
+
+  async _initVizzu() {
+    if (!this.vizzu) {
+      // load and init vizzu
+      const Vizzu = window.Vizzu || (await import(this.vizzuUrl)).default;
+      this._resolveVizzu(Vizzu);
+      this.vizzu = new Vizzu(this.vizzuCanvas);
+    }
   }
 
   _slideToAnimparams(slide) {
@@ -453,4 +474,3 @@ customElements.define("vizzu-player", VizzuPlayer);
 
 export default VizzuPlayer;
 export { VizzuController };
-export { Vizzu };

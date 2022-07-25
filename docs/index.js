@@ -1,4 +1,6 @@
-import VizzuPlayer from "https://cdn.jsdelivr.net/npm/vizzu-story@~0.1.0/dist/vizzu-story.min.js"; // eslint-disable-line no-unused-vars
+// import VizzuPlayer from "https://cdn.jsdelivr.net/npm/vizzu-story@latest/dist/vizzu-story.min.js";
+import VizzuPlayer from "../src/vizzu-player.js"; // eslint-disable-line no-unused-vars
+
 import data from "./data.js";
 import style from "./style.js";
 
@@ -17,7 +19,8 @@ const vizzuPlayerData = {
     // silde
     {
       config: {}, // Config.Chart
-      filter: () => true, // data.filter TODO: not declarative, cannot be serialized ??? string => Function
+      filter: () => true, // data.filter TODO: not declarative, cannot be
+      // serialized ??? string => Function
       style: {}, // Styles.Chart
       animOptions: {}, // Anim.Options
     },
@@ -124,10 +127,10 @@ const vpd = {
 };
 
 const vp = document.querySelector("vizzu-player");
-vp.slides = vpd; // init slides
-vp.vizzu.initializing.then((chart) =>
-  chart.on("plot-axis-label-draw", labelHandler)
-);
+vp.initializing.then((chart) => {
+  vp.slides = vpd; // init slides
+  chart.on("plot-axis-label-draw", labelHandler);
+});
 
 /*
 TODO:
